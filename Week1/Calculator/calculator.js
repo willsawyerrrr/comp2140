@@ -2,12 +2,15 @@
 // <expression>, if supplied, must be of the form "<operand1> <operator>
 //     <operand2>", including whitespace between each token.
 
-const prompt = require("prompt-sync")({sigint: true}); // allow ^C to interrupt<
+const prompt = require("prompt-sync")({sigint: true}); // allow ^C to interrupt
 
-/** <operand1> <operator> <operand2> */
+/** Number of tokens in a binary expression: <operand1> <operator> <operand2>. */
 const BINARY_TOKENS = 3
-/** <operator> <operand2> */
+
+/** Number of tokens in a unary expression: <operator> <operand2>. */
 const UNARY_TOKENS = 2
+
+/** Valid arithmetic operators. */
 const OPERATORS = ["+", "-", "*", "/", "**"];
 
 
@@ -23,7 +26,7 @@ function parseArgs(args) {
     if (args.length) { // expression supplied; non-interactive
         return {
             interactive: false,
-            expression: args.join("")
+            expression: args.join(" ")
         };
     } else { // expression not supplied; interactive
         return {
@@ -56,16 +59,47 @@ function interactive() {
 function evaluate(expression, current = null) {
     let validation = validateExpression(expression);
     if (!validation.valid) {
-        console.error("Usage: calculator.js [<expression>]");
-        process.exit(1);
-    } else if (validation.type == "binary") {
+        // do nothing
+    } else if (validation.type == "Binary") {
         // evaluate as binary expression
-        return eval(expression);
-    } else if ((current != null) && (validation.type == "unary")) {
+        let tokens = validation.tokens;
+        switch (tokens[1]) {
+            case "+":
+                return tokens[0] + tokens[2];
+            case "-":
+                return tokens[0] - tokens[2];
+            case "*":
+                return tokens[0] * tokens[2];
+            case "/":
+                return tokens[0] / tokens[2];
+            case "**":
+                return tokens[0] ** tokens[2];
+            default:
+                throw TypeError("Invalid operator");
+        }
+    } else if ((current != null) && (validation.type == "Unary")) {
         // only allow unary expression if current value is supplied
         // evaluate as unary expression, using current value
-        return eval(str(current) + expression);
+        let tokens = validation.tokens;
+        switch (tokens[0]) {
+            case "+":
+                return current + tokens[1];
+            case "-":
+                return current - tokens[1];
+            case "*":
+                return current * tokens[1];
+            case "/":
+                return current / tokens[1];
+            case "**":
+                return current ** tokens[1];
+            default:
+                throw TypeError("Invalid operator");
+        }
     }
+    
+    // invalid expression and/or unary expression without current value
+    console.error("Usage: calculator.js [<expression>]");
+    process.exit(1);
 }
 
 
@@ -88,6 +122,9 @@ function validateExpression(expression) {
             || !OPERATORS.includes(tokens[1])) {    // operator is not valid
             return {valid: false};
         } else {
+            let operand1 = parseFloat(tokens[0]);
+            let operator = tokens[1];
+            let operand2 = parseFloat(tokens[2]);
             return {
                 valid: true,
                 type: "Binary",
@@ -100,10 +137,12 @@ function validateExpression(expression) {
             || !OPERATORS.includes(tokens[0])) {    // operator is not valid
             return {valid: false};
         } else {
+            let operator = tokens[0];
+            let operand = parseFloat(tokens[1]);
             return {
                 valid: true,
                 type: "Unary",
-                tokens: [operator, operand2]
+                tokens: [operator, operand]
             };
         };
     } else {
