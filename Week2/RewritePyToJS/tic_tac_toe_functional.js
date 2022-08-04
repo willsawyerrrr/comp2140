@@ -123,7 +123,6 @@ function getCurrentPlayer(playerOnesTurn) {
 }
 
 
-
 /**
  * Check if the given player has won the game.
  */
