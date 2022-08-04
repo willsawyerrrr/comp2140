@@ -113,7 +113,7 @@ class Game {
         while (true) {
             let move = prompt(MOVE_PROMPT.replace("{}", this.getCurrentPlayer()));
 
-            // Check vlaidity and return the move if true
+            // Check validity and return the move if true
             if (/\d/.test(move)) {
                 return parseInt(move);
             }
