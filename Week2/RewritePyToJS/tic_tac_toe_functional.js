@@ -22,7 +22,7 @@ const WINNING_TRIOS = [
 
 
 /**
- * Prints the current board out to the terminal.
+ * Returns a string representation of the current board.
  * 
  * @param {List[str]} board the values for each position on the baord
  * @param {int} padding how many spaces should appear either side of the values; defaults to 1
@@ -30,19 +30,21 @@ const WINNING_TRIOS = [
 function printGameBoard(board, padding = 1) {
     let horizontalDivider = "-".repeat(BOARD_LENGTH * (2 * padding + 1) + 2);
 
+    let result = "";
+
     for (let i = 0; i < BOARD_LENGTH; i++) {
         if (i != 0) {
-            console.log(horizontalDivider);
+            result += horizontalDivider + "\n";
         }
 
         let start = i * BOARD_LENGTH;
         let row = board.slice(start, start + BOARD_LENGTH);
         row = row.map(value => `${EMPTY.repeat(padding)}${value}${EMPTY.repeat(padding)}`);
 
-        console.log(row.join("|"));
+        result += row.join("|") + "\n";
     }
 
-    console.log();
+    return result;
 }
 
 /**
@@ -61,7 +63,7 @@ function reset() {
  */
 function play(board, winner, playerOnesTurn) {
     while (!isOver(board, winner)) {
-        printGameBoard(board);
+        console.log(printGameBoard(board));
 
         // Prompt the next player for a move
         let index = getNextMove();
