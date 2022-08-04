@@ -14,6 +14,7 @@ const DRAW_MESSAGE = "The game ended in a draw.";
 const WIN_MESSAGE = "\nPlayer {} has won the game!!";
 const REPLAY_PROMPT = "Do you wish to play again? [y/N] ";
 
+// Trios of indices which form a winning line on the board
 const WINNING_TRIOS = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -22,10 +23,12 @@ const WINNING_TRIOS = [
 
 
 /**
- * Returns a string representation of the current board.
+ * Returns the string representation of the given board.
  * 
- * @param {List[str]} board the values for each position on the baord
+ * @param {List[str]} board the values for each position on the board
  * @param {int} padding how many spaces should appear either side of the values; defaults to 1
+ * 
+ * @return {str} the string representation of the board
  */
 function encodeGameBoard(board, padding = 1) {
     let horizontalDivider = "-".repeat(BOARD_LENGTH * (2 * padding + 1) + 2);
@@ -49,6 +52,8 @@ function encodeGameBoard(board, padding = 1) {
 
 /**
  * Returns objects used to reset the game to a valid starting state.
+ * 
+ * @returns {Array} objects used to reset the game to a valid starting state: board (Array[str]), winner (null), playerOnesTurn (bool)
  */
 function reset() {
     board = new Array(BOARD_LENGTH ** 2).fill(EMPTY);
@@ -60,6 +65,12 @@ function reset() {
 
 /**
  * Plays a tic-tac-toe game through to completion.
+ * 
+ * @param {List[str]} board the values for each position on the board
+ * @param {str | null} winner player who has won the game, or null if the game has not yet finished
+ * @param {bool} playerOnesTurn whether or not it is player one's turn
+ * 
+ * @return {str | null} the winner of the game, or null if the game has been drawn
  */
 function play(board, winner, playerOnesTurn) {
     while (!isOver(board, winner)) {
@@ -100,6 +111,10 @@ function play(board, winner, playerOnesTurn) {
  * numerical index, which it returns.
  * 
  * Doesn't perform out bounds validity checks on the supplied index.
+ * 
+ * @param {bool} playerOnesTurn whether or not it is player one's turn
+ * 
+ * @return {int} the index of the next move
  */
 function getNextMove(playerOnesTurn) {
     while (true) {
@@ -116,7 +131,11 @@ function getNextMove(playerOnesTurn) {
 
 
 /**
- * Gets the string corresponding to the player whose turn it is.
+ * Returns the string corresponding to the player whose turn it is.
+ * 
+ * @param {bool} playerOnesTurn whether or not it is player one's turn
+ * 
+ * @return {str} the string corresponding to the player whose turn it is
  */
 function getCurrentPlayer(playerOnesTurn) {
     return playerOnesTurn ? PLAYER_ONE : PLAYER_TWO;
@@ -124,7 +143,12 @@ function getCurrentPlayer(playerOnesTurn) {
 
 
 /**
- * Check if the given player has won the game.
+ * Check if the current player has won the game on the given board.
+ * 
+ * @param {List[str]} board the values for each position on the board
+ * @param {bool} playerOnesTurn whether or not it is player one's turn
+ * 
+ * @return {bool} true if and only if the current player has won the game
  */
 function checkWin(board, playerOnesTurn) {
     // Get all player owned indices
@@ -144,6 +168,10 @@ function checkWin(board, playerOnesTurn) {
 
 /**
  * Returns true if and only if neither player is able to make a move.
+ * 
+ * @param {List[str]} board the values for each position on the board
+ * 
+ * @return {bool} true if and only if neither player is able to make a move
  */
 function hasDrawn(board) {
     return !board.includes(EMPTY);
@@ -152,6 +180,11 @@ function hasDrawn(board) {
 
 /**
  * Returns true if and only if the game is over.
+ * 
+ * @param {List[str]} board the values for each position on the board
+ * @param {str | null} winner player who has won the game, or null if the game has not yet finished
+ * 
+ * @return {bool} true if and only if the game is over
  */
 function isOver(board, winner) {
     return hasDrawn(board) || winner != null;
@@ -160,6 +193,10 @@ function isOver(board, winner) {
 
 /**
  * Returns winning or drawing info after the game has completed.
+ * 
+ * @param {str | null} winner player who has won the game, or null if the game has been drawn
+ * 
+ * @return {str} winning or drawing info after the game has completed
  */
 function displayWinnerInfo(winner) {
     if (winner == null) {
