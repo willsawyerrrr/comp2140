@@ -56,9 +56,9 @@ function encodeGameBoard(board, padding = 1) {
  * @returns {Array} objects used to reset the game to a valid starting state: board (Array[str]), winner (null), playerOnesTurn (bool)
  */
 function reset() {
-    board = new Array(BOARD_LENGTH ** 2).fill(EMPTY);
-    winner = null;
-    playerOnesTurn = true;
+    let board = new Array(BOARD_LENGTH ** 2).fill(EMPTY);
+    let winner = null;
+    let playerOnesTurn = true;
 
     return [board, winner, playerOnesTurn];
 }
