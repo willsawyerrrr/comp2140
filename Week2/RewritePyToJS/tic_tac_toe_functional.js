@@ -27,7 +27,7 @@ const WINNING_TRIOS = [
  * @param {List[str]} board the values for each position on the baord
  * @param {int} padding how many spaces should appear either side of the values; defaults to 1
  */
-function printGameBoard(board, padding = 1) {
+function encodeGameBoard(board, padding = 1) {
     let horizontalDivider = "-".repeat(BOARD_LENGTH * (2 * padding + 1) + 2);
 
     let result = "";
@@ -63,7 +63,7 @@ function reset() {
  */
 function play(board, winner, playerOnesTurn) {
     while (!isOver(board, winner)) {
-        console.log(printGameBoard(board));
+        console.log(encodeGameBoard(board));
 
         // Prompt the next player for a move
         let index = getNextMove();
