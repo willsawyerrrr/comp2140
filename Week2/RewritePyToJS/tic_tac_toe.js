@@ -42,7 +42,7 @@ function printGameBoard(board, padding = 1) {
         console.log(row.join("|"));
     }
 
-    console.log("\n");
+    console.log();
 }
 
 
