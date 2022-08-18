@@ -90,7 +90,10 @@ function main() {
      * @returns {string} the JSON response.
      */
     async function fetchData(url) {
-        // YOUR CODE HERE
+        let response = await fetch(url);
+        if (response.ok) {
+            return await response.json();
+        }
     }
 
     /**
