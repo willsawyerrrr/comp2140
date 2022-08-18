@@ -117,6 +117,7 @@ function main() {
      */
     async function saveCache(filenameAppend, data) {
         fs.writeFile(jsonFilename(filenameAppend), data);
+        console.log(messageSaveCache(filenameAppend));
     }
 
     /**
@@ -125,7 +126,9 @@ function main() {
      * @returns {string} the JSON data from the cache file.
      */
     async function readCache(filenameAppend) {
-        return await fs.readFile(jsonFilename(filenameAppend));
+        let cache = await fs.readFile(jsonFilename(filenameAppend));
+        console.log(messageReadCache(filenameAppend));
+        return cache;
     }
 
     // Synchronous prompt logic
