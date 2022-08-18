@@ -62,8 +62,7 @@ function main() {
 
             // Check for end game conditions
             if (checkWin(board, playerOnesTurn)) {
-                winner = getCurrentPlayer(playerOnesTurn);
-                return winner;
+                return getCurrentPlayer(playerOnesTurn);
             }
 
             // Flip the turn
