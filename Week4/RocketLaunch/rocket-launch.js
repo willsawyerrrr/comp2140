@@ -21,13 +21,11 @@ function main() {
      */
     function dateStringify(date) {
         let month = new String(date.getMonth() + 1);
-        if (month.length < 2) {
-            month = `0${month}`;
-        }
+        month.padStart(2, '0');
+
         let day = new String(date.getDate());
-        if (day.length < 2) {
-            day = `0${day}`;
-        }
+        day.padStart(2, '0');
+
         return new String(`${date.getFullYear()}-${month}-${day}`);
     }
 
