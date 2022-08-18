@@ -1,4 +1,5 @@
 const prompt = require("prompt-sync")({ sigint: true });
+const fs = require("fs");
 
 function main() {
     const BOARD_LENGTH = 3;
@@ -102,9 +103,15 @@ function main() {
 
     let displayWinnerInfo = (winner) => (winner == null) ? DRAW_MESSAGE : WIN_MESSAGE(winner);
 
+    function saveWinnerInfo(winner) {
+        let getMessage = (error) => console.log(error ? error : "Winner successfully saved to winners.txt");
+        fs.appendFile("winners.txt", `${winner}\n`, getMessage);
+    }
+
     let [board, winner, playerOnesTurn] = reset();
     winner = play(board, winner, playerOnesTurn);
     console.log(displayWinnerInfo(winner));
+    saveWinnerInfo(winner);
     if (/^y$/.test(prompt(REPLAY_PROMPT).toLowerCase())) {
         main();
     }
