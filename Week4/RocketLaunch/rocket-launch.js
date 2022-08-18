@@ -135,8 +135,13 @@ function main() {
             dataTop[dayIndex] = dataTopFiltered;
         }
 
-        fs.writeFile("all.json", JSON.stringify(dataAll, null, 4));
-        fs.writeFile("top.json", JSON.stringify(dataTop, null, 4));
+        all = JSON.stringify(dataAll, null, 4);
+        fs.writeFile("all.json", all);
+        console.log(dataAll);
+
+        top = JSON.stringify(dataTop, null, 4);
+        fs.writeFile("top.json", top);
+        console.log(dataTop);
 
         daySelectedFiltered = dataAll[input].length;
         console.log(messageFiltered(input, daySelectedFiltered));
