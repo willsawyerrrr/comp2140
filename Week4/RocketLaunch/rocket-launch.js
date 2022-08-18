@@ -15,24 +15,20 @@ function main() {
     const jsonFilename = (append) => `spacex-${append}.json`;
 
     /**
-     * This function stringifies a given date format similar to UTC format.
-     * @param {string} date - a date in UTC format (dd/mm/yyyy).
-     * @returns {string} date similar to UTC format.
+     * Stringifies a given date format similar to UTC format.
+     * @param {string} date a date in UTC format (dd/mm/yyyy)
+     * @returns {string} date similar to UTC format
      */
     function dateStringify(date) {
-        let month = new String(date.getMonth() + 1);
-        month.padStart(2, '0');
-
-        let day = new String(date.getDate());
-        day.padStart(2, '0');
-
+        let month = new String(date.getMonth() + 1).padStart(2, '0');
+        let day = new String(date.getDate()).padStart(2, '0');
         return new String(`${date.getFullYear()}-${month}-${day}`);
     }
 
     /**
-     * This function returns a new date offsetted by x days from today.
-     * @param {number} days - a number of days to offset by.
-     * @returns {Date} object.
+     * Returns a new date offset by `days` days from today.
+     * @param {number} days a number of days to offset by
+     * @returns {Date} offset date
      */
     function addDays(days) {
         let today = new Date();
@@ -41,7 +37,6 @@ function main() {
     }
 
     // Declare date global variables
-
     const today = new Date();
     const todayDate = dateStringify(today);
     const oneDay = addDays(maxDays / 2);
@@ -50,7 +45,6 @@ function main() {
     const twoDayDate = dateStringify(twoDay);
 
     // Declare message global variables
-
     let messageWelcome = "Welcome to the SpaceX Rocket Launch Checker!";
     let messageExiting = "Exiting. See you next time!";
     let messageInput = `Please enter \x1b[32mtoday\x1b[0m (${todayDate}) or \x1b[32mtomorrow\x1b[0m (${oneDayDate}) or \x1b[32mday after tomorrow\x1b[0m (${twoDayDate}) to return the number of filtered launches for that day: `;
@@ -62,9 +56,9 @@ function main() {
     let messageFiltered = (input, daySelectedFiltered) => `For the input of \x1b[32m${input}\x1b[0m, the filtered results are: ${daySelectedFiltered}`;
 
     /**
-     * This function takes the user input and converts it into a formatted date.
-     * @param {string} input - the user input from the prompt.
-     * @returns {string|null} either a formatted date or null when no result.
+     * Returns a stringified date corresponding to the user's input.
+     * @param {string} input the user's input
+     * @returns {string | null} stringified date; `null` if `input` is invalid
      */
     function validateDate(input) {
         switch (input) {
@@ -80,9 +74,9 @@ function main() {
     }
 
     /**
-     * This function fetches data asynchronously based on the URL provided.
-     * @param {string} url - the URL to fetch data from (expecting JSON).
-     * @returns {string} the JSON response.
+     * Asynchronously fetches data from `url`.
+     * @param {string} url the URL to fetch data from
+     * @returns {string} the JSON response
      */
     async function fetchData(url) {
         let response = await fetch(url);
@@ -92,13 +86,14 @@ function main() {
     }
 
     /**
-     * This function will fetch launch data and filter the array based on the day.
-     * @param {number} day - The selected day in date format
-     * @returns {Array} the sorted array of launches based on date_unix and only the same day of the week.
+     * Fetches launch data and filters the array based on the day.
+     * @param {number} day the selected day in date format
+     * @returns {Array} sorted array of launches based on `date_unix` and only the same day of the week
      */
     async function filterLaunches(day) {
         const launches = await fetchData(launchURL);
-        let filteredLaunches = launches.filter(launch => new Date(launch.date_utc).getDay() == new Date(day).getDay() && launch.success);
+        // filter by success first for efficiency
+        let filteredLaunches = launches.filter(launch => launch.success).filter(launch => new Date(launch.date_utc).getDay() == new Date(day).getDay());
         let filteredData = await Promise.all(filteredLaunches.map(async (launch) => {
             let launchpad = await fetchData(launchpadURL + launch.launchpad);
             launch["launchpad"] = launchpad;
@@ -111,8 +106,8 @@ function main() {
     }
 
     /**
-     * This function will populate data from fetched JSON and determine the number of filtered launches for the inputted day.
-     * @param {string} input - The validated string as inputted by the user.
+     * Populates data from fetched JSON and determine the number of filtered launches for the inputted day.
+     * @param {string} input the validated string as inputted by the user
      */
     async function combineFetches(input) {
         let daySelected = validateDate(input);
@@ -148,9 +143,9 @@ function main() {
     }
 
     /**
-     * This function will save a JSON cache file with the specified filename & data.
-     * @param {string} filenameAppend - The string to append to the JSON filename.
-     * @param {string} data - The string containing JSON data to save.
+     * Saves a JSON cache file with the specified filename & data.
+     * @param {string} filenameAppend the string to append to the JSON filename
+     * @param {string} data the string containing JSON data to save
      */
     async function saveCache(filenameAppend, data) {
         fs.writeFile(jsonFilename(filenameAppend), data);
@@ -158,13 +153,14 @@ function main() {
     }
 
     /**
-     * This function will read a JSON cache file with the specified filename.
-     * @param {string} filenameAppend - The string to append to the JSON filename.
-     * @returns {string} the JSON data from the cache file.
+     * Reads from the JSON cache file with the specified filename.
+     * @param {string} filename unique part of the JSON cache file's name
+     * @see `jsonFilename` for the use of `filename`
+     * @returns {string} the JSON data from the cache file
      */
-    async function readCache(filenameAppend) {
-        let cache = await fs.readFile(jsonFilename(filenameAppend));
-        console.log(messageReadCache(filenameAppend));
+    async function readCache(filename) {
+        let cache = await fs.readFile(jsonFilename(filename));
+        console.log(messageReadCache(filename));
         return cache;
     }
 
@@ -194,7 +190,6 @@ function main() {
         // Run fetches to get data
         combineFetches(input);
     }
-
 }
 
 main();
