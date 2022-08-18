@@ -128,7 +128,7 @@ function main() {
      * @returns {string} the JSON data from the cache file.
      */
     async function readCache(filenameAppend) {
-        // YOUR CODE HERE
+        return await fs.readFile(jsonFilename(filenameAppend));
     }
 
     // Synchronous prompt logic
