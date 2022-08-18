@@ -87,7 +87,7 @@ function main() {
 
     function checkWin(board, playerOnesTurn) {
         // Get all player owned indices
-        let positions = board.filter((value, index) => value == getCurrentPlayer(playerOnesTurn)).map((_, index) => index);
+        let positions = board.map((value, index) => [value, index]).filter(pair => (pair[0] == getCurrentPlayer(playerOnesTurn))).map(pair => pair[1]);
 
         return WINNING_TRIOS.map(trio => trio.every(value => positions.includes(value))).some(value => value);
     }
