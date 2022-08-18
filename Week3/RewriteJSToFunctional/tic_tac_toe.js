@@ -1,214 +1,109 @@
 const prompt = require("prompt-sync")({ sigint: true });
 
-const BOARD_LENGTH = 3;
-const PLAYER_ONE = "X";
-const PLAYER_TWO = "O";
-const EMPTY = " ";
+function main() {
+    const BOARD_LENGTH = 3;
+    const PLAYER_ONE = "X";
+    const PLAYER_TWO = "O";
+    const EMPTY = " ";
 
-// Messages
-const MOVE_PROMPT = "Player {}, please enter the index of your next move: ";
-const INVALID_INPUT = "Wrong input. Please try again";
-const OUT_OF_BOUNDS = "Position out of bounds. Please try again.";
-const POSITION_FILLED = "Position already filled. Please try again.";
-const DRAW_MESSAGE = "The game ended in a draw.";
-const WIN_MESSAGE = "\nPlayer {} has won the game!!";
-const REPLAY_PROMPT = "Do you wish to play again? [y/N] ";
+    // Messages
+    const MOVE_PROMPT = (player) => `Player ${player}, please enter the index of your next move: `;
+    const INVALID_INPUT = "Wrong input. Please try again";
+    const OUT_OF_BOUNDS = "Position out of bounds. Please try again.";
+    const POSITION_FILLED = "Position already filled. Please try again.";
+    const DRAW_MESSAGE = "The game ended in a draw.";
+    const WIN_MESSAGE = (player) => `\nPlayer ${player} has won the game!!`;
+    const REPLAY_PROMPT = "Do you wish to play again? [y/N] ";
 
-// Trios of indices which form a winning line on the board
-const WINNING_TRIOS = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6]
-];
+    // Trios of indices which form a winning line on the board
+    const WINNING_TRIOS = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6],
+        [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]
+    ];
 
+    function encodeGameBoard(board, padding = 1) {
+        let horizontalDivider = "-".repeat(BOARD_LENGTH * (2 * padding + 1) + 2);
 
-/**
- * Returns the string representation of the given board.
- * 
- * @param {List[str]} board the values for each position on the board
- * @param {int} padding how many spaces should appear either side of the values; defaults to 1
- * 
- * @return {str} the string representation of the board
- */
-function encodeGameBoard(board, padding = 1) {
-    let horizontalDivider = "-".repeat(BOARD_LENGTH * (2 * padding + 1) + 2);
-
-    let result = "";
-
-    for (let i = 0; i < BOARD_LENGTH; i++) {
-        if (i != 0) {
-            result += horizontalDivider + "\n";
+        function encodeRow(needsDivider, row) {
+            let result = needsDivider ? horizontalDivider : "";
+            result += row.map(value => `${EMPTY.repeat(padding)}${value}${EMPTY.repeat(padding)}`);
+            return result
         }
 
-        let start = i * BOARD_LENGTH;
-        let row = board.slice(start, start + BOARD_LENGTH);
-        row = row.map(value => `${EMPTY.repeat(padding)}${value}${EMPTY.repeat(padding)}`);
+        let rowIndexes = Array(BOARD_LENGTH).fill(0).map((_, i) => i); // range from 0 to BOARD_LENGTH - 1
+        let rows = rowIndexes.map(index => board.slice(index * BOARD_LENGTH, (index + 1) * BOARD_LENGTH));
 
-        result += row.join("|") + "\n";
+        let encodedRows = rows.map((row, index) => encodeRow(index != 0, row));
+
+        return encodedRows.join("|") + "\n";
     }
 
-    return result;
-}
+    function play(board, winner, playerOnesTurn) {
+        while (!isOver(board, winner)) {
+            console.log(encodeGameBoard(board));
 
-/**
- * Returns objects used to reset the game to a valid starting state.
- * 
- * @returns {Array} objects used to reset the game to a valid starting state: board (Array[str]), winner (null), playerOnesTurn (bool)
- */
-function reset() {
-    let board = new Array(BOARD_LENGTH ** 2).fill(EMPTY);
-    let winner = null;
-    let playerOnesTurn = true;
+            // Prompt the next player for a move
+            let index = getNextMove();
 
-    return [board, winner, playerOnesTurn];
-}
+            // Perform out of bounds check
+            if (!(0 <= index < BOARD_LENGTH ** 2)) {
+                console.log(OUT_OF_BOUNDS);
+                continue;
+            }
 
-/**
- * Plays a tic-tac-toe game through to completion.
- * 
- * @param {List[str]} board the values for each position on the board
- * @param {str | null} winner player who has won the game, or null if the game has not yet finished
- * @param {bool} playerOnesTurn whether or not it is player one's turn
- * 
- * @return {str | null} the winner of the game, or null if the game has been drawn
- */
-function play(board, winner, playerOnesTurn) {
-    while (!isOver(board, winner)) {
-        console.log(encodeGameBoard(board));
+            // Check if position already filled
+            if (board[index] != EMPTY) {
+                console.log(POSITION_FILLED);
+                continue;
+            }
 
-        // Prompt the next player for a move
-        let index = getNextMove();
+            // Enact the move on the board
+            board[index] = getCurrentPlayer(playerOnesTurn);
 
-        // Perform out of bounds check
-        if (!(0 <= index < BOARD_LENGTH ** 2)) {
-            console.log(OUT_OF_BOUNDS);
-            continue;
-        }
+            // Check for end game conditions
+            if (checkWin(board, playerOnesTurn)) {
+                winner = getCurrentPlayer(playerOnesTurn);
+                return winner;
+            }
 
-        // Check if position already filled
-        if (board[index] != EMPTY) {
-            console.log(POSITION_FILLED);
-            continue;
-        }
-
-        // Enact the move on the board
-        board[index] = getCurrentPlayer(playerOnesTurn);
-
-        // Check for end game conditions
-        if (checkWin(board, playerOnesTurn)) {
-            winner = getCurrentPlayer(playerOnesTurn);
-            return winner;
-        }
-
-        // Flip the turn
-        playerOnesTurn = !playerOnesTurn;
-    }
-}
-
-
-/**
- * Repeatedly prompts the user for their next move until they give a
- * numerical index, which it returns.
- * 
- * Doesn't perform out bounds validity checks on the supplied index.
- * 
- * @param {bool} playerOnesTurn whether or not it is player one's turn
- * 
- * @return {int} the index of the next move
- */
-function getNextMove(playerOnesTurn) {
-    while (true) {
-        let move = prompt(MOVE_PROMPT.replace("{}", getCurrentPlayer(playerOnesTurn)));
-
-        // Check validity and return the move if true
-        if (/\d/.test(move)) {
-            return parseInt(move);
-        }
-
-        console.log(INVALID_INPUT);
-    }
-}
-
-
-/**
- * Returns the string corresponding to the player whose turn it is.
- * 
- * @param {bool} playerOnesTurn whether or not it is player one's turn
- * 
- * @return {str} the string corresponding to the player whose turn it is
- */
-function getCurrentPlayer(playerOnesTurn) {
-    return playerOnesTurn ? PLAYER_ONE : PLAYER_TWO;
-}
-
-
-/**
- * Check if the current player has won the game on the given board.
- * 
- * @param {List[str]} board the values for each position on the board
- * @param {bool} playerOnesTurn whether or not it is player one's turn
- * 
- * @return {bool} true if and only if the current player has won the game
- */
-function checkWin(board, playerOnesTurn) {
-    // Get all player owned indices
-    let positions = board.map((value, index) => [value, index]).filter(pair => (pair[0] == getCurrentPlayer(playerOnesTurn)));
-
-    for (let winningTrio of WINNING_TRIOS) {
-        // Check if the player is at all indicies in a winning trio
-        if (winningTrio.every(index => positions.some(pair => pair[1] == index))) {
-            // for every index in winningTrio, it also exists as an index in positions
-            return true;
+            // Flip the turn
+            playerOnesTurn = !playerOnesTurn;
         }
     }
 
-    return false;
-}
+    function getNextMove(playerOnesTurn, showError = false) {
+        if (showError) {
+            console.log(INVALID_INPUT);
+        }
 
+        let move = prompt(MOVE_PROMPT(getCurrentPlayer(playerOnesTurn)));
 
-/**
- * Returns true if and only if neither player is able to make a move.
- * 
- * @param {List[str]} board the values for each position on the board
- * 
- * @return {bool} true if and only if neither player is able to make a move
- */
-function hasDrawn(board) {
-    return !board.includes(EMPTY);
-}
-
-
-/**
- * Returns true if and only if the game is over.
- * 
- * @param {List[str]} board the values for each position on the board
- * @param {str | null} winner player who has won the game, or null if the game has not yet finished
- * 
- * @return {bool} true if and only if the game is over
- */
-function isOver(board, winner) {
-    return hasDrawn(board) || winner != null;
-}
-
-
-/**
- * Returns winning or drawing info after the game has completed.
- * 
- * @param {str | null} winner player who has won the game, or null if the game has been drawn
- * 
- * @return {str} winning or drawing info after the game has completed
- */
-function displayWinnerInfo(winner) {
-    if (winner == null) {
-        return DRAW_MESSAGE;
-    } else {
-        return WIN_MESSAGE.replace("{}", winner);
+        // If valid, return; otherwise, recurse
+        return /^\d$/.test(move) ? parseInt(move) : getNextMove(playerOnesTurn, true);
     }
+
+    function checkWin(board, playerOnesTurn) {
+        // Get all player owned indices
+        let positions = board.filter((value, index) => value == getCurrentPlayer(playerOnesTurn)).map((_, index) => index);
+
+        return WINNING_TRIOS.map(trio => trio.every(value => positions.contains(value))).some(value => value);
+    }
+
+    let getCurrentPlayer = (playerOnesTurn) => playerOnesTurn ? PLAYER_ONE : PLAYER_TWO;
+
+    let reset = () => [new Array(BOARD_LENGTH ** 2).fill(EMPTY), null, true];
+
+    let hasDrawn = (board) => !board.includes(EMPTY);
+
+    let isOver = (board, winner) => hasDrawn(board) || winner != null;
+
+    let displayWinnerInfo = (winner) => (winner == null) ? DRAW_MESSAGE : WIN_MESSAGE(winner);
+
+    do {
+        let [board, winner, playerOnesTurn] = reset();
+        winner = play(board, winner, playerOnesTurn);
+        console.log(displayWinnerInfo(winner));
+    } while (/^"y"$/.test(prompt(REPLAY_PROMPT).toLowerCase()));
 }
 
-
-do {
-    let [board, winner, playerOnesTurn] = reset();
-    winner = play(board, winner, playerOnesTurn);
-    console.log(displayWinnerInfo(winner));
-} while (prompt(REPLAY_PROMPT) == "y");
+main();
