@@ -114,7 +114,7 @@ function main() {
 
     /**
      * This function will populate data from fetched JSON and determine the number of filtered launches for the inputted day.
-     * @param {number} input - The validated string as inputted by the user.
+     * @param {string} input - The validated string as inputted by the user.
      */
     async function combineFetches(input) {
         // YOUR CODE HERE
