@@ -1,14 +1,11 @@
 // Import dependencies using ES Modules (requires "type": "module" in package.json)
 import promptSync from "prompt-sync";
-const prompt = promptSync({
-    sigint: false
-});
+const prompt = promptSync({ sigint: false });
 import fetch from "node-fetch";
 import fs from "fs/promises";
 
 // The main app logic
 function main() {
-
     // Declare global variables
     const numDays = 7;
     const numTop = 3;
