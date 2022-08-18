@@ -99,7 +99,17 @@ function main() {
      * @returns {Array} the sorted array of launches based on date_unix and only the same day of the week.
      */
     async function filterLaunches(day) {
-        // YOUR CODE HERE
+        const launches = await fetchData(launchURL);
+        let filteredLaunches = launches.filter(launch => new Date(launch.date_utc).getDay() == new Date(day).getDay() && launch.success);
+        let filteredData = await Promise.all(filteredLaunches.map(async (launch) => {
+            let launchpad = await fetchData(launchpadURL + launch.launchpad);
+            launch["launchpad"] = launchpad;
+            return launch;
+        }));
+
+        let sortData = filteredData.slice(0);
+        sortData.sort((a, b) => a.date_unix - b.date_unix);
+        return sortData;
     }
 
     /**
