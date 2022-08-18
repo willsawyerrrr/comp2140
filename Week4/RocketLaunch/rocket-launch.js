@@ -117,7 +117,36 @@ function main() {
      * @param {string} input - The validated string as inputted by the user.
      */
     async function combineFetches(input) {
-        // YOUR CODE HERE
+        let daySelected = validateDate(input);
+        let daySelectedFiltered;
+
+        // Setup base array for all data
+        let dataAll = {
+            "today": [],
+            "tomorrow": [],
+            "day after tomorrow": []
+        };
+
+        // Setup base array for top data
+        let dataTop = {
+            ...dataAll // Spread syntax used to duplicate array contents
+        };
+
+        for (let dayIndex in dataAll) {
+            // Sorted data and filtered based on the selected day of week
+            let dataAllFiltered = await filterLaunches(daySelected);
+            console.log(messageFetchedLive(dayIndex, daySelected));
+            dataAll[dayIndex] = dataAllFiltered;
+
+            let dataTopFiltered = dataAllFiltered.slice(0, numTop);
+            dataTop[dayIndex] = dataTopFiltered;
+        }
+
+        fs.writeFile("all.json", JSON.stringify(dataAll, null, 4));
+        fs.writeFile("top.json", JSON.stringify(dataTop, null, 4));
+
+        daySelectedFiltered = dataAll[input].length;
+        console.log(messageFiltered(input, daySelectedFiltered));
     }
 
     /**
