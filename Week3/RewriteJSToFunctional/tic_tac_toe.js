@@ -22,11 +22,11 @@ function main() {
     ];
 
     function encodeGameBoard(board, padding = 1) {
-        let horizontalDivider = "-".repeat(BOARD_LENGTH * (2 * padding + 1) + 2);
+        let horizontalDivider = "-".repeat(BOARD_LENGTH * (2 * padding + 1) + 2) + "\n";
 
         function encodeRow(needsDivider, row) {
             let result = needsDivider ? horizontalDivider : "";
-            result += row.map(value => `${EMPTY.repeat(padding)}${value}${EMPTY.repeat(padding)}`);
+            result += row.map(value => `${EMPTY.repeat(padding)}${value}${EMPTY.repeat(padding)}`).join("|");
             return result
         }
 
@@ -35,39 +35,43 @@ function main() {
 
         let encodedRows = rows.map((row, index) => encodeRow(index != 0, row));
 
-        return encodedRows.join("|") + "\n";
+        return encodedRows.join("\n") + "\n";
     }
 
     function play(board, winner, playerOnesTurn) {
-        while (!isOver(board, winner)) {
-            console.log(encodeGameBoard(board));
+        console.log(encodeGameBoard(board));
 
-            // Prompt the next player for a move
-            let index = getNextMove();
+        // Prompt the next player for a move
+        let index = getNextMove();
 
-            // Perform out of bounds check
-            if (!(0 <= index < BOARD_LENGTH ** 2)) {
-                console.log(OUT_OF_BOUNDS);
-                continue;
-            }
-
-            // Check if position already filled
-            if (board[index] != EMPTY) {
-                console.log(POSITION_FILLED);
-                continue;
-            }
-
-            // Enact the move on the board
-            board[index] = getCurrentPlayer(playerOnesTurn);
-
-            // Check for end game conditions
-            if (checkWin(board, playerOnesTurn)) {
-                return getCurrentPlayer(playerOnesTurn);
-            }
-
-            // Flip the turn
-            playerOnesTurn = !playerOnesTurn;
+        // Perform out of bounds check
+        if (!(0 <= index < BOARD_LENGTH ** 2)) {
+            console.log(OUT_OF_BOUNDS);
+            return play(board, winner, playerOnesTurn);
         }
+
+        // Check if position already filled
+        if (board[index] != EMPTY) {
+            console.log(POSITION_FILLED);
+            return play(board, winner, playerOnesTurn);
+        }
+
+        // Enact the move on the board
+        board[index] = getCurrentPlayer(playerOnesTurn);
+
+        // Check for end game conditions
+        if (checkWin(board, playerOnesTurn)) {
+            return getCurrentPlayer(playerOnesTurn);
+        }
+
+        // Flip the turn
+        playerOnesTurn = !playerOnesTurn;
+
+        if (isOver(board, winner)) {
+            return null;
+        }
+
+        return play(board, winner, playerOnesTurn);
     }
 
     function getNextMove(playerOnesTurn, showError = false) {
@@ -85,7 +89,7 @@ function main() {
         // Get all player owned indices
         let positions = board.filter((value, index) => value == getCurrentPlayer(playerOnesTurn)).map((_, index) => index);
 
-        return WINNING_TRIOS.map(trio => trio.every(value => positions.contains(value))).some(value => value);
+        return WINNING_TRIOS.map(trio => trio.every(value => positions.includes(value))).some(value => value);
     }
 
     let getCurrentPlayer = (playerOnesTurn) => playerOnesTurn ? PLAYER_ONE : PLAYER_TWO;
@@ -98,11 +102,12 @@ function main() {
 
     let displayWinnerInfo = (winner) => (winner == null) ? DRAW_MESSAGE : WIN_MESSAGE(winner);
 
-    do {
-        let [board, winner, playerOnesTurn] = reset();
-        winner = play(board, winner, playerOnesTurn);
-        console.log(displayWinnerInfo(winner));
-    } while (/^"y"$/.test(prompt(REPLAY_PROMPT).toLowerCase()));
+    let [board, winner, playerOnesTurn] = reset();
+    winner = play(board, winner, playerOnesTurn);
+    console.log(displayWinnerInfo(winner));
+    if (/^y$/.test(prompt(REPLAY_PROMPT).toLowerCase())) {
+        main();
+    }
 }
 
 main();
