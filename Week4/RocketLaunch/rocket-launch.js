@@ -119,7 +119,7 @@ function main() {
      * @param {string} data - The string containing JSON data to save.
      */
     async function saveCache(filenameAppend, data) {
-        // YOUR CODE HERE
+        fs.writeFile(jsonFilename(filenameAppend), data);
     }
 
     /**
