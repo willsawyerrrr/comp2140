@@ -89,7 +89,7 @@ function main() {
         // Get all player owned indices
         let positions = board.map((value, index) => [value, index]).filter(pair => (pair[0] == getCurrentPlayer(playerOnesTurn))).map(pair => pair[1]);
 
-        return WINNING_TRIOS.map(trio => trio.every(value => positions.includes(value))).some(value => value);
+        return WINNING_TRIOS.some(trio => trio.every(value => positions.includes(value)));
     }
 
     let getCurrentPlayer = (playerOnesTurn) => playerOnesTurn ? PLAYER_ONE : PLAYER_TWO;
