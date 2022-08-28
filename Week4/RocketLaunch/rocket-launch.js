@@ -135,13 +135,10 @@ function main() {
             dataTop[dayIndex] = dataTopFiltered;
         }
 
-        all = JSON.stringify(dataAll, null, 4);
-        fs.writeFile("all.json", all);
-        console.log(dataAll);
 
-        top = JSON.stringify(dataTop, null, 4);
-        fs.writeFile("top.json", top);
-        console.log(dataTop);
+        // Save JSON cache files
+        await saveCache("all", JSON.stringify(dataAll, null, 4));
+        await saveCache("top", JSON.stringify(dataTop, null, 4));
 
         daySelectedFiltered = dataAll[input].length;
         console.log(messageFiltered(input, daySelectedFiltered));
