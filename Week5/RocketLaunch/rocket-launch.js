@@ -76,7 +76,7 @@ function main() {
     /**
      * Asynchronously fetches data from `url`.
      * @param {string} url the URL to fetch data from
-     * @returns {string} the JSON response
+     * @returns {object} the JSON response
      */
     async function fetchData(url) {
         let response = await fetch(url);
