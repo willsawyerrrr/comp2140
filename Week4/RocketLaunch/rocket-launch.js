@@ -113,32 +113,47 @@ function main() {
         let daySelected = validateDate(input);
         let daySelectedFiltered;
 
-        // Setup base array for all data
-        let dataAll = {
-            "today": [],
-            "tomorrow": [],
-            "day after tomorrow": []
-        };
+        let dataAll = {};
+        let dataTop = {};
 
-        // Setup base array for top data
-        let dataTop = {
-            ...dataAll // Spread syntax used to duplicate array contents
-        };
+        // get from cache files
+        let dataAllCached = await readCache("all");
+        let dataTopCached = await readCache("top");
 
-        for (let dayIndex in dataAll) {
-            // Sorted data and filtered based on the selected day of week
-            let dataAllFiltered = await filterLaunches(daySelected);
-            console.log(messageFetchedLive(dayIndex, daySelected));
-            dataAll[dayIndex] = dataAllFiltered;
+        if (dataAllCached && dataTopCached) {
+            // cache files exist, use them
+            dataAll = JSON.parse(dataAllCached);
+            dataTop = JSON.parse(dataTopCached);
+        } else {
+            // cache files don't exist, fetch data
 
-            let dataTopFiltered = dataAllFiltered.slice(0, numTop);
-            dataTop[dayIndex] = dataTopFiltered;
+            // Setup base array for all data
+            dataAll = {
+                "today": [],
+                "tomorrow": [],
+                "day after tomorrow": []
+            };
+
+            // Setup base array for top data
+            dataTop = {
+                ...dataAll // Spread syntax used to duplicate array contents
+            };
+
+            for (let dayIndex in dataAll) {
+                // Sorted data and filtered based on the selected day of week
+                let dataAllFiltered = await filterLaunches(daySelected);
+                console.log(messageFetchedLive(dayIndex, daySelected));
+                dataAll[dayIndex] = dataAllFiltered;
+
+                let dataTopFiltered = dataAllFiltered.slice(0, numTop);
+                dataTop[dayIndex] = dataTopFiltered;
+            }
+
+
+            // save to cache files
+            await saveCache("all", dataAll);
+            await saveCache("top", dataTop);
         }
-
-
-        // Save JSON cache files
-        await saveCache("all", JSON.stringify(dataAll, null, 4));
-        await saveCache("top", JSON.stringify(dataTop, null, 4));
 
         daySelectedFiltered = dataAll[input].length;
         console.log(messageFiltered(input, daySelectedFiltered));
@@ -150,7 +165,7 @@ function main() {
      * @param {string} data the string containing JSON data to save
      */
     async function saveCache(filenameAppend, data) {
-        fs.writeFile(jsonFilename(filenameAppend), data);
+        fs.writeFile(jsonFilename(filenameAppend), JSON.stringify(data, null, 4));
         console.log(messageSaveCache(filenameAppend));
     }
 
