@@ -1,29 +1,55 @@
 import { useState } from "react";
 
+import "./css/style.css";
+
+import binImage from "./images/bin.png";
+
+
 const initialTodos = [
     { task: "Take out the trash", completed: false },
     { task: "Walk the dog", completed: true },
     { task: "Do the weekly quizzes", completed: false },
 ];
 
-function Todo({ task, completed, toggleCompleted }) {
+
+function Todo({ task, completed, toggleCompleted, removeTodo }) {
     const taskStyle = () => {
         let result = { display: "inline-block" };
         if (completed) {
-            result["text-decoration"] = "line-through";
+            result["textDecoration"] = "line-through";
         }
         return result;
     };
 
     return (
         <section>
-            <input type="checkbox" checked={completed} onChange={toggleCompleted} />
-            <p style={taskStyle()}>
-                {task}
-            </p>
-        </section>
+            <div>
+                <input type="checkbox" checked={completed} onChange={toggleCompleted} />
+                <p style={taskStyle()}>
+                    {task}
+                </p>
+            </div>
+            <DeleteButton removeTodo={removeTodo} />
+        </section >
     );
 }
+
+
+function DeleteButton({ removeTodo }) {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        removeTodo();
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="delete">
+            <button type="submit">
+                <img src={binImage} height="20px" width="20px" alt="bin" />
+            </button>
+        </form>
+    );
+}
+
 
 function NewTodoForm({ sortTodos, setTodos }) {
     const [task, setTask] = useState("");
@@ -49,6 +75,7 @@ function NewTodoForm({ sortTodos, setTodos }) {
     );
 }
 
+
 function App() {
     const sortTodos = (todo, otherTodo) => {
         if (todo.task < otherTodo.task) {
@@ -68,6 +95,12 @@ function App() {
         setTodos(sorted);
     };
 
+    const removeTodo = (todo) => {
+        let result = todos.filter((_todo) => _todo.task !== todo.task);
+        let sorted = result.sort(sortTodos);
+        setTodos(sorted);
+    };
+
     return (
         <>
             <header>
@@ -80,6 +113,7 @@ function App() {
                         key={todo.task}
                         {...todo}
                         toggleCompleted={() => toggleCompleted(todo)}
+                        removeTodo={() => removeTodo(todo)}
                     />
                 ))}
                 <NewTodoForm sortTodos={sortTodos} setTodos={setTodos} />
@@ -87,5 +121,6 @@ function App() {
         </>
     );
 }
+
 
 export default App;
