@@ -6,9 +6,9 @@ import binImage from "./images/bin.png";
 
 
 const initialTodos = [
-    { task: "Take out the trash", completed: false },
-    { task: "Walk the dog", completed: true },
-    { task: "Do the weekly quizzes", completed: false },
+    { id: 0, task: "Take out the trash", completed: false },
+    { id: 1, task: "Walk the dog", completed: true },
+    { id: 2, task: "Do the weekly quizzes", completed: false },
 ];
 
 
@@ -53,10 +53,12 @@ function DeleteButton({ removeTodo }) {
 
 function NewTodoForm({ sortTodos, setTodos }) {
     const [task, setTask] = useState("");
+    const [nextId, setId] = useState(initialTodos.length);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setTodos((todos) => [...todos, { task, completed: false }].sort(sortTodos));
+        setTodos((todos) => [...todos, { id: nextId, task, completed: false }].sort(sortTodos));
+        setId(nextId + 1);
         setTask("");
     };
 
@@ -78,10 +80,10 @@ function NewTodoForm({ sortTodos, setTodos }) {
 
 function App() {
     const sortTodos = (todo, otherTodo) => {
-        if (todo.task < otherTodo.task) {
+        if (todo.id < otherTodo.id) {
             return -1;
         }
-        if (todo.task > otherTodo.task) {
+        if (todo.id > otherTodo.id) {
             return 1;
         }
         return 0;
@@ -90,13 +92,13 @@ function App() {
     const [todos, setTodos] = useState(initialTodos.sort(sortTodos));
 
     const toggleCompleted = (todo) => {
-        let result = todos.filter((_todo) => _todo.task !== todo.task);
+        let result = todos.filter((_todo) => _todo.id !== todo.id);
         let sorted = [...result, { ...todo, completed: !todo.completed }].sort(sortTodos);
         setTodos(sorted);
     };
 
     const removeTodo = (todo) => {
-        let result = todos.filter((_todo) => _todo.task !== todo.task);
+        let result = todos.filter((_todo) => _todo.id !== todo.id);
         let sorted = result.sort(sortTodos);
         setTodos(sorted);
     };
@@ -110,7 +112,7 @@ function App() {
                 <h2>List of Todos</h2>
                 {todos.map(todo => (
                     <Todo
-                        key={todo.task}
+                        key={todo.id}
                         {...todo}
                         toggleCompleted={() => toggleCompleted(todo)}
                         removeTodo={() => removeTodo(todo)}
