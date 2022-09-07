@@ -28,11 +28,6 @@ function Todo({ task, completed, toggleCompleted }) {
 function App() {
     const [todos, setTodos] = useState(initialTodos);
 
-    const toggleCompleted = (todo) => {
-        let result = todos.filter((_todo) => _todo.task !== todo.task);
-        setTodos([...result, { ...todo, completed: !todo.completed }]);
-    };
-
     const sortTodos = (todo, otherTodo) => {
         if (todo.task < otherTodo.task) {
             return -1;
@@ -43,6 +38,12 @@ function App() {
         return 0;
     };
 
+    const toggleCompleted = (todo) => {
+        let result = todos.filter((_todo) => _todo.task !== todo.task);
+        let sorted = [...result, { ...todo, completed: !todo.completed }].sort(sortTodos);
+        setTodos(sorted);
+    };
+
     return (
         <>
             <header>
@@ -50,7 +51,7 @@ function App() {
             </header>
             <main>
                 <h2>List of Todos</h2>
-                {todos.sort(sortTodos).map(todo => (
+                {todos.map(todo => (
                     <Todo
                         key={todo.task}
                         {...todo}
