@@ -25,9 +25,31 @@ function Todo({ task, completed, toggleCompleted }) {
     );
 }
 
-function App() {
-    const [todos, setTodos] = useState(initialTodos);
+function NewTodoForm({ sortTodos, setTodos }) {
+    const [task, setTask] = useState("");
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setTodos((todos) => [...todos, { task, completed: false }].sort(sortTodos));
+        setTask("");
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <label htmlFor="task">Task:</label>
+            <input
+                type="text"
+                id="task"
+                name="task"
+                value={task}
+                onChange={(e) => setTask(e.target.value)}
+            />
+            <button type="submit">Add Todo</button>
+        </form>
+    );
+}
+
+function App() {
     const sortTodos = (todo, otherTodo) => {
         if (todo.task < otherTodo.task) {
             return -1;
@@ -37,6 +59,8 @@ function App() {
         }
         return 0;
     };
+
+    const [todos, setTodos] = useState(initialTodos.sort(sortTodos));
 
     const toggleCompleted = (todo) => {
         let result = todos.filter((_todo) => _todo.task !== todo.task);
@@ -58,6 +82,7 @@ function App() {
                         toggleCompleted={() => toggleCompleted(todo)}
                     />
                 ))}
+                <NewTodoForm sortTodos={sortTodos} setTodos={setTodos} />
             </main>
         </>
     );
