@@ -12,6 +12,10 @@ export default function Header() {
             name: "Recipes",
             url: "/recipe",
         },
+        {
+            name: "Just the Facts",
+            url: "/just-the-facts",
+        },
     ];
 
     return (
@@ -31,6 +35,6 @@ export default function Header() {
                 </ul>
             </nav>
         </header>
-    );  
+    );
 
 }
