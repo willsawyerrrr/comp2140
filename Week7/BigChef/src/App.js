@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Template from "../components/Template";
+import Template from "./components/Template";
 
 export default function App() {
     return (
