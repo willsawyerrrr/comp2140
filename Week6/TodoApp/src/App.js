@@ -79,28 +79,17 @@ function NewTodoForm({ sortTodos, setTodos }) {
 
 
 function App() {
-    const sortTodos = (todo, otherTodo) => {
-        if (todo.id < otherTodo.id) {
-            return -1;
-        }
-        if (todo.id > otherTodo.id) {
-            return 1;
-        }
-        return 0;
-    };
+    const sortTodos = (todo, otherTodo) => todo.id - otherTodo.id;
 
     const [todos, setTodos] = useState(initialTodos.sort(sortTodos));
 
     const toggleCompleted = (todo) => {
-        let result = todos.filter((_todo) => _todo.id !== todo.id);
-        let sorted = [...result, { ...todo, completed: !todo.completed }].sort(sortTodos);
-        setTodos(sorted);
+        setTodos(todos.map(_todo => _todo === todo
+            ? { ...todo, completed: !todo.completed } : _todo));
     };
 
     const removeTodo = (todo) => {
-        let result = todos.filter((_todo) => _todo.id !== todo.id);
-        let sorted = result.sort(sortTodos);
-        setTodos(sorted);
+        setTodos(todos.filter(_todo => _todo.id !== todo.id).sort(sortTodos));
     };
 
     return (
