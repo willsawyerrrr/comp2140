@@ -16,6 +16,10 @@ export default function Header() {
             name: "Just the Facts",
             url: "/just-the-facts",
         },
+        {
+            name: "Music",
+            url: "/music",
+        },
     ];
 
     return (

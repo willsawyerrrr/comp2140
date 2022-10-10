@@ -40,6 +40,32 @@ main {
     display: flex;
 }
 
-.method>article {
+.method > article {
     margin-right: 4em;
+}
+
+/* Music */
+
+.sequencer {
+	border: 2px solid black;
+	display: flex;
+	overflow: auto;
+}
+
+.sequencer > .bar {
+	border: 1px solid black;
+	width: 100%;
+	padding: 0.75em 0.25em;
+	text-align: center;
+	cursor: pointer;
+}
+
+.sequencer > .bar:hover {
+	background: #aaa;
+}
+
+.sequencer > .bar.selected {
+	background: #666;
+	color: white;
+	font-weight: bold;
 }
