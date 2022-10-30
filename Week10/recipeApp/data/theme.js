@@ -19,7 +19,7 @@ export const colors = {
     transparentBlack5: "rgba(0, 0, 0, 0.5)",
     transparentBlack7: "rgba(0, 0, 0, 0.7)",
     transparentBlack9: "rgba(0, 0, 0, 0.9)",
-    
+
     transparentGray: "rgba(77,77,77, 0.8)",
     transparentDarkGray: "rgba(20,20,20, 0.9)",
 

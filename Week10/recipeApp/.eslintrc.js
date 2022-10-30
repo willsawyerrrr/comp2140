@@ -1,4 +1,5 @@
 module.exports = {
-  root: true,
-  extends: '@react-native-community',
+    root: true,
+    singleQuote: false,
+    extends: "@react-native-community",
 };

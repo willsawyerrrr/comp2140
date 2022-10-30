@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
 
-import { colors, sizes, fonts  } from "../data/theme";
+import { colors, sizes, fonts } from "../data/theme";
 import icons from "../data/icons";
 
 function Recipe({ navigation, route, recipes, setRecipes }) {
@@ -23,12 +23,12 @@ function Recipe({ navigation, route, recipes, setRecipes }) {
             >
                 <View
                     style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    paddingHorizontal: sizes.padding,
-                    height: 70,
-                }}>
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingHorizontal: sizes.padding,
+                        height: 70,
+                    }}>
                     {/* Go Back */}
                     <TouchableOpacity
                         style={{
@@ -58,7 +58,7 @@ function Recipe({ navigation, route, recipes, setRecipes }) {
                         </Text>
                     </TouchableOpacity>
 
-                    {/* Bookmark */ }
+                    {/* Bookmark */}
                     <TouchableOpacity style={{
                         alignItems: "center",
                         justifyContent: "center",
@@ -131,7 +131,7 @@ function Recipe({ navigation, route, recipes, setRecipes }) {
                 backgroundColor: colors.white
             }}
         >
-            {/* Header Bar */ }
+            {/* Header Bar */}
             {renderHeaderBar()}
 
             {/* Recipe Ingredients */}
@@ -150,7 +150,7 @@ function Recipe({ navigation, route, recipes, setRecipes }) {
                 ListFooterComponent={
                     <View style={{ marginTop: sizes.padding / 2 }} />
                 }
-                renderItem={({item}) => (
+                renderItem={({ item }) => (
                     <View
                         style={{
                             flexDirection: "row",

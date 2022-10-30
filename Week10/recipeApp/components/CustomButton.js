@@ -13,21 +13,21 @@ function CustomButton({ buttonText, buttonContainerStyle, buttonColors, onPress 
             >
                 <LinearGradient
                     start={{ x: 0, y: 0 }}
-                    end={{x: 1, y: 1}}
+                    end={{ x: 1, y: 1 }}
                     colors={colors}
                     style={{
                         ...buttonContainerStyle
                     }}
                 >
-                <Text
-                    style={{
-                        textAlign: 'center',
-                        color: colors.white,
-                        ...fonts.h3
-                    }}
-                >
-                    {buttonText}
-                </Text>
+                    <Text
+                        style={{
+                            textAlign: "center",
+                            color: colors.white,
+                            ...fonts.h3
+                        }}
+                    >
+                        {buttonText}
+                    </Text>
                 </LinearGradient>
             </TouchableOpacity>
         )
@@ -38,7 +38,7 @@ function CustomButton({ buttonText, buttonContainerStyle, buttonColors, onPress 
             >
                 <Text
                     style={{
-                        textAlign: 'center',
+                        textAlign: "center",
                         color: colors.lightGreen,
                         ...fonts.h3
                     }}

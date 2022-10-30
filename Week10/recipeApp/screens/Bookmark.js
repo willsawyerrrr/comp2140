@@ -3,7 +3,7 @@ import { SafeAreaView, View, Text, FlatList } from "react-native";
 
 import { colors, fonts, sizes } from "../data/theme";
 
-import RecipeCard from '../components/RecipeCard';
+import RecipeCard from "../components/RecipeCard";
 
 function Bookmark({ navigation, recipes }) {
 
@@ -21,14 +21,14 @@ function Bookmark({ navigation, recipes }) {
                 keyExtractor={item => item.id}
                 ListFooterComponent={
                     <View style={{ marginBottom: sizes.padding * 5 }}>
-                        <Text style={{ ...fonts.body4 }}>That's the end of bookmarked recipes.</Text>
+                        <Text style={{ ...fonts.body4 }}>That"s the end of bookmarked recipes.</Text>
                     </View>
                 }
                 renderItem={({ item }) => {
                     return (
                         <RecipeCard
                             recipe={item}
-                            onPress={()=> navigation.navigate("Recipe", { recipe: item })}
+                            onPress={() => navigation.navigate("Recipe", { recipe: item })}
                         />
                     );
                 }}
